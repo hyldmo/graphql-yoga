@@ -6,13 +6,18 @@ import {
   useResponseCache as useEnvelopResponseCache,
   UseResponseCacheParameter as UseEnvelopResponseCacheParameter,
 } from '@envelop/response-cache'
-import { GraphQLParams, Plugin, YogaInitialContext } from '@graphql-yoga/common'
+import {
+  GraphQLParams,
+  Maybe,
+  Plugin,
+  YogaInitialContext,
+} from '@graphql-yoga/common'
 
 export type UseResponseCacheParameter = Omit<
   UseEnvelopResponseCacheParameter,
   'getDocumentStringFromContext' | 'session'
 > & {
-  session: (params: GraphQLParams, request: Request) => string
+  session: (params: GraphQLParams, request: Request) => Maybe<string>
   enabled?: (params: GraphQLParams, request: Request) => boolean
 }
 
