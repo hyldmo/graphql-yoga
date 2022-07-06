@@ -30,9 +30,13 @@ import {
   Plugin,
   RequestParser,
   ResultProcessor,
+  ResultProcessorInput,
 } from './plugins/types.js'
 import * as crossUndiciFetch from 'cross-undici-fetch'
-import { processRequest as processGraphQLParams } from './processRequest.js'
+import {
+  processRequest as processGraphQLParams,
+  processResult,
+} from './processRequest.js'
 import { defaultYogaLogger, titleBold, YogaLogger } from './logger.js'
 import { CORSPluginOptions, useCORS } from './plugins/useCORS.js'
 import { useHealthCheck } from './plugins/useHealthCheck.js'
@@ -473,34 +477,48 @@ export class YogaServer<
 
       let params = await requestParser(request)
 
+      let result: ResultProcessorInput | undefined
+
       for (const onRequestParseDone of onRequestParseDoneList) {
         await onRequestParseDone({
           params,
           setParams(newParams: GraphQLParams) {
             params = newParams
           },
+          setResult(earlyResult: ResultProcessorInput) {
+            result = earlyResult
+          },
+        })
+        if (result) {
+          break
+        }
+      }
+
+      if (result == null) {
+        const initialContext = {
+          request,
+          ...params,
+          ...serverContext,
+        }
+
+        const enveloped = this.getEnveloped(initialContext)
+
+        this.logger.debug(`Processing GraphQL Parameters`)
+
+        result = await processGraphQLParams({
+          params,
+          enveloped,
         })
       }
 
-      const initialContext = {
+      const response = await processResult({
         request,
-        ...params,
-        ...serverContext,
-      }
-
-      const enveloped = this.getEnveloped(initialContext)
-
-      this.logger.debug(`Processing GraphQL Parameters`)
-
-      const result = await processGraphQLParams({
-        request,
-        params,
-        enveloped,
+        result,
         fetchAPI: this.fetchAPI,
         onResultProcessHooks: this.onResultProcessHooks,
       })
 
-      return result
+      return response
     } catch (error: unknown) {
       const finalResponseInit = {
         status: 200,

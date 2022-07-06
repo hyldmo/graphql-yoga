@@ -68,6 +68,7 @@ export type OnRequestParseDoneHook = (
 export interface OnRequestParseDoneEventPayload {
   params: GraphQLParams
   setParams: (params: GraphQLParams) => void
+  setResult: (result: ResultProcessorInput) => void
 }
 
 export type OnResultProcess = (

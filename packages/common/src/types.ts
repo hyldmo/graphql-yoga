@@ -30,14 +30,6 @@ export interface GraphQLParams<
   extensions?: TExtensions
 }
 
-export interface FormatPayloadParams<TContext, TRootValue> {
-  payload: ExecutionResult | ExecutionPatchResult
-  context?: TContext
-  document?: DocumentNode
-  operation?: OperationDefinitionNode
-  rootValue?: TRootValue
-}
-
 export interface YogaInitialContext {
   /**
    * A Document containing GraphQL Operations and Fragments to execute.
@@ -59,17 +51,6 @@ export interface YogaInitialContext {
    * Additional extensions object sent by the client.
    */
   extensions?: Record<string, any>
-}
-
-export interface RequestProcessContext<TContext> {
-  request: Request
-  enveloped: ReturnType<GetEnvelopedFn<TContext>>
-  params: GraphQLParams
-  fetchAPI: FetchAPI
-  /**
-   * Response Hooks
-   */
-  onResultProcessHooks: OnResultProcess[]
 }
 
 export type CORSOptions =
