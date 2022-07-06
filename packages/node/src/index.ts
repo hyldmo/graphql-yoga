@@ -214,14 +214,14 @@ export type YogaNodeServerInstance<TServerContext, TUserContext, TRootValue> =
 
 export * from './types.js'
 export {
-  ExecutionPatchResult,
-  YogaInitialContext,
-  CORSOptions,
-  YogaLogger,
+  type ExecutionPatchResult,
+  type YogaInitialContext,
+  type CORSOptions,
+  type YogaLogger,
   GraphQLYogaError,
   shouldRenderGraphiQL,
   renderGraphiQL,
-  GraphiQLOptions,
+  type GraphiQLOptions,
 } from '@graphql-yoga/common'
 
 export * from '@envelop/core'

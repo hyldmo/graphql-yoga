@@ -1,6 +1,6 @@
-import { PromiseOrValue } from '@envelop/core'
-import { YogaLogger } from '../logger.js'
-import { Plugin } from './types.js'
+import { type PromiseOrValue } from '@envelop/core'
+import { type YogaLogger } from '../logger.js'
+import { type Plugin } from './types.js'
 import graphiqlHTML from '../graphiqlHTML.js'
 
 export function shouldRenderGraphiQL({ headers, method }: Request): boolean {

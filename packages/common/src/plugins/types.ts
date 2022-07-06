@@ -1,10 +1,12 @@
-import { Plugin as EnvelopPlugin, PromiseOrValue } from '@envelop/core'
-import { ExecutionResult } from 'graphql'
 import {
-  ExecutionPatchResult,
-  FetchAPI,
-  GraphQLParams,
-  YogaInitialContext,
+  type Plugin as EnvelopPlugin,
+  type PromiseOrValue,
+} from '@envelop/core'
+import { type ExecutionResult } from 'graphql'
+import {
+  type ExecutionPatchResult,
+  type FetchAPI,
+  type GraphQLParams,
 } from '../types.js'
 
 export type Plugin<

@@ -4,11 +4,11 @@ export * from './server.js'
 
 export * from '@envelop/core'
 export * from '@graphql-yoga/subscription'
-export { CORSOptions } from './plugins/useCORS.js'
+export { type CORSOptions } from './plugins/useCORS.js'
 export {
-  GraphiQLOptions,
+  type GraphiQLOptions,
   shouldRenderGraphiQL,
   renderGraphiQL,
 } from './plugins/useGraphiQL.js'
 export { GraphQLYogaError } from './GraphQLYogaError.js'
-export { Plugin } from './plugins/types.js'
+export { type Plugin } from './plugins/types.js'
