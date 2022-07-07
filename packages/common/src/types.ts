@@ -1,12 +1,6 @@
-import type {
-  DocumentNode,
-  ExecutionResult,
-  GraphQLError,
-  OperationDefinitionNode,
-} from 'graphql'
+import type { DocumentNode, GraphQLError } from 'graphql'
 import type { TypedDocumentNode } from '@graphql-typed-document-node/core'
-import { GetEnvelopedFn, PromiseOrValue } from '@envelop/core'
-import { OnResultProcess } from './plugins/types.js'
+import { PromiseOrValue } from '@envelop/core'
 
 export interface ExecutionPatchResult<
   TData = { [key: string]: any },

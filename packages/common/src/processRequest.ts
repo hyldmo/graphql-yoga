@@ -21,7 +21,7 @@ export async function processResult({
    */
   onResultProcessHooks: OnResultProcess[]
 }) {
-  let resultProcessor: ResultProcessor | undefined
+  let resultProcessor: ResultProcessor<any> | undefined
 
   for (const onResultProcessHook of onResultProcessHooks) {
     await onResultProcessHook({
