@@ -1,0 +1,10 @@
+{
+  "name": "bun-example",
+  "version": "0.0.0",
+  "scripts": {
+    "start": "bun index.ts"
+  },
+  "dependencies": {
+    "@graphql-yoga/common": "2.10.0"
+  }
+}

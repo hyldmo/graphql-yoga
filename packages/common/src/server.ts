@@ -667,6 +667,9 @@ export function createServer<
     return server.handleRequest(input, undefined as any)
   }
   return new Proxy(fnHandler as any, {
+    has: (_, prop) => {
+      return prop in server || prop in fnHandler
+    },
     get: (_, prop) => {
       if (server[prop]) {
         if (server[prop].bind) {
