@@ -7,6 +7,7 @@
   },
   "scripts": {
     "build": "tsc",
+    "bundle": "node scripts/bundle.js",
     "watch": "tsc -w",
     "check": "tsc --noEmit",
     "test": "jest",
@@ -21,12 +22,14 @@
     "ts-node": "10.9.1",
     "aws-cdk": "2.32.1",
     "aws-cdk-lib": "2.32.1",
-    "typescript": "4.7.4"
+    "typescript": "4.7.4",
+    "tslib": "2.4.0"
   },
   "dependencies": {
     "@aws-cdk/aws-apigateway": "1.164.0",
     "@aws-cdk/aws-lambda": "1.164.0",
     "@aws-cdk/core": "1.164.0",
+    "esbuild": "0.14.49",
     "source-map-support": "^0.5.16"
   }
 }

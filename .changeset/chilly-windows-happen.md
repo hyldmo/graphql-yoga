@@ -1,0 +1,82 @@
+---
+'graphql-yoga': major
+---
+
+**Single NPM package**
+
+Now GraphQL Yoga has a single NPM package for all environments `graphql-yoga` instead of `@graphql-yoga/common` and `@graphql-yoga/node`.
+So you need to uninstall `@graphql-yoga/common` and `@graphql-yoga/node` then install `graphql-yoga` from NPM.
+
+**`createServer` renamed to `createYoga`**
+
+In order to prevent the confusion, we decided to rename `createServer` function to `createYoga`.
+
+```diff
+- import { createServer } from '@graphql-yoga/node'
++ import { createYoga } from 'graphql-yoga'
+import { schema } from './schema';
+
+- const yoga = createServer({
+-     schema,
+- })
++ const yoga = createYoga({
++     schema,
++ })
+```
+
+**No more `.start` and `.stop`**
+
+Previously on Node and CF/Service Workers environments, Yoga handles server processes with `.start` and `.stop` methods together with some environment specific server configurations. Yoga no longer deals with HTTP server configuration so the following changes needed;
+
+**_For Node_**
+
+```diff
+- import { createServer } from '@graphql-yoga/node'
++ import { createYoga } from 'graphql-yoga'
++ import { createServer } from 'http'
+
+- const server = createServer({
+-     port: 4000,
+-     hostname: '127.0.0.1'
+- })
++ const yoga = createYoga({})
++ const server = createServer(yoga)
+
+- server.start()
++ server.listen(4000, '127.0.0.1')
+```
+
+**_For CF/Service Workers_**
+
+```diff
+- yoga.stop()
++ self.addEventListener('fetch', yoga)
+```
+
+**No more Node specific multipart configuration**
+
+Previously it was possible to configure limitations of multipart request processing in `@graphql-yoga/node` package but now `graphql-yoga` package is completely platform agnostic and we avoid to have any Node specific configuration in GraphQL Yoga. But it is still possible to keep the same behavior by configuring `cross-undici-fetch` which is used by GraphQL Yoga internally for Node.js.
+
+```diff
+- import { createServer } from '@graphql-yoga/node'
++ import { createYoga } from 'graphql-yoga'
++ import { create } from 'cross-undici-fetch'
+
++ const yoga = createYoga({
++  fetchAPI: create({
++     // We prefer `node-fetch` over `undici` and current unstable Node's implementation
++     useNodeFetch: true,
++     formDataLimits: {
+-  multipart: {
+      // Maximum allowed file size (in bytes)
+      fileSize: 1000000,
+      // Maximum allowed number of files
+      files: 10,
+      // Maximum allowed size of content (operations, variables etc...)
+      fieldSize: 1000000,
+      // Maximum allowed header size for form data
+      headerSize: 1000000,
+    },
++  }),
+})
+```
