@@ -31,7 +31,8 @@ import {
   RequestParser,
   ResultProcessor,
 } from './plugins/types.js'
-import { create as createFetchAPI } from 'cross-undici-fetch'
+import { createFetch } from '@whatwg-node/fetch'
+import { ServerAdapter, createServerAdapter } from '@whatwg-node/server'
 import { processRequest as processGraphQLParams } from './processRequest.js'
 import { defaultYogaLogger, titleBold, YogaLogger } from './logger.js'
 import { CORSPluginOptions, useCORS } from './plugins/useCORS.js'
@@ -78,18 +79,6 @@ import { useCheckMethodForGraphQL } from './plugins/requestValidation/useCheckMe
 import { useCheckGraphQLQueryParam } from './plugins/requestValidation/useCheckGraphQLQueryParam.js'
 import { useHTTPValidationError } from './plugins/requestValidation/useHTTPValidationError.js'
 import { usePreventMutationViaGET } from './plugins/requestValidation/usePreventMutationViaGET.js'
-import {
-  getNodeRequest,
-  isReadable,
-  isServerResponse,
-  NodeRequest,
-  sendNodeResponse,
-} from './utils/node-http.js'
-import type {
-  RequestListener,
-  IncomingMessage,
-  ServerResponse,
-} from 'node:http'
 
 interface OptionsWithPlugins<TContext> {
   /**
@@ -217,8 +206,7 @@ export class YogaServer<
   TServerContext extends Record<string, any>,
   TUserContext extends Record<string, any>,
   TRootValue,
-> implements EventListenerObject
-{
+> {
   /**
    * Instance of envelop
    */
@@ -227,7 +215,7 @@ export class YogaServer<
   >
   public logger: YogaLogger
   protected endpoint?: string
-  protected fetchAPI: FetchAPI
+  public fetchAPI: FetchAPI
   protected plugins: Array<
     Plugin<TUserContext & TServerContext & YogaInitialContext, TServerContext>
   >
@@ -243,7 +231,7 @@ export class YogaServer<
     this.id = options?.id ?? 'yoga'
     this.fetchAPI =
       options?.fetchAPI ??
-      createFetchAPI({
+      createFetch({
         useNodeFetch: true,
       })
     const schema = options?.schema
@@ -619,56 +607,13 @@ export class YogaServer<
       executionResult,
     }
   }
-
-  fetch: WindowOrWorkerGlobalScope['fetch'] = (
-    input: RequestInfo,
-    init?: RequestInit,
-  ) => {
-    let request: Request
-    if (typeof input === 'string') {
-      request = new this.fetchAPI.Request(input, init)
-    } else {
-      request = input
-    }
-    return this.handleRequest(request, init as any)
-  }
-
-  handleEvent = (event: FetchEvent) => {
-    if (!event.respondWith || !event.request) {
-      throw new TypeError(`Expected FetchEvent, got ${event}`)
-    }
-    const response$ = this.handleRequest(event.request, event as any)
-    event.respondWith(response$)
-  }
-
-  handleIncomingMessage(
-    nodeRequest: NodeRequest,
-    serverContext: TServerContext,
-  ): Promise<Response> {
-    this.logger.debug(`Processing Node Request`)
-    const request = getNodeRequest(nodeRequest, this.fetchAPI.Request)
-    return this.handleRequest(request, serverContext)
-  }
-
-  requestListener: RequestListener = async (
-    req: IncomingMessage,
-    res: ServerResponse,
-  ) => {
-    const response = await this.handleIncomingMessage(req, { req, res } as any)
-    this.logger.debug('Passing Response back to Node')
-    await sendNodeResponse(response, res)
-  }
-
-  handle = this.requestListener
 }
 
 export type YogaServerInstance<TServerContext, TUserContext, TRootValue> =
-  YogaServer<TServerContext, TUserContext, TRootValue> &
-    RequestListener &
-    (
-      | WindowOrWorkerGlobalScope['fetch']
-      | ((context: { request: Request }) => Promise<Response>)
-    )
+  ServerAdapter<
+    TServerContext,
+    YogaServer<TServerContext, TUserContext, TRootValue>
+  >
 
 export function createYoga<
   TServerContext extends Record<string, any> = {},
@@ -680,46 +625,9 @@ export function createYoga<
   const server = new YogaServer<TServerContext, TUserContext, TRootValue>(
     options,
   )
-  // TODO: Will be removed once we get rid of classes
-  function genericRequestHandler(input: any, ctx: any) {
-    // If it is a Node request
-    if (isReadable(input) && ctx != null && isServerResponse(ctx)) {
-      return server.requestListener(input as IncomingMessage, ctx)
-    }
-    // Is input a container object over Request?
-    if (input.request) {
-      // Is it FetchEvent?
-      if (input.respondWith) {
-        return server.handleEvent(input)
-      }
-      // In this input is also the context
-      return server.handleRequest(input.request, input)
-    }
-    // Or is it Request itself?
-    // Then ctx is present and it is the context
-    return server.handleRequest(input, ctx)
-  }
-  return new Proxy(genericRequestHandler as any, {
-    // It should have all the attributes of the handler function and the server instance
-    has: (_, prop) => {
-      return prop in genericRequestHandler || prop in server
-    },
-    get: (_, prop) => {
-      if (server[prop]) {
-        if (server[prop].bind) {
-          return server[prop].bind(server)
-        }
-        return server[prop]
-      }
-      if (genericRequestHandler[prop]) {
-        if (genericRequestHandler[prop].bind) {
-          return genericRequestHandler[prop].bind(genericRequestHandler)
-        }
-        return genericRequestHandler[prop]
-      }
-    },
-    apply(_, __, [input, ctx]: Parameters<typeof genericRequestHandler>) {
-      return genericRequestHandler(input, ctx)
-    },
+  return createServerAdapter({
+    baseObject: server,
+    handleRequest: server.handleRequest as any,
+    Request: server.fetchAPI.Request,
   })
 }

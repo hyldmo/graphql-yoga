@@ -1,5 +1,5 @@
 import { createYoga } from 'graphql-yoga'
-import { fetch } from 'cross-undici-fetch'
+import { fetch } from '@whatwg-node/fetch'
 import { GraphQLError } from 'graphql'
 import { createServer } from 'http'
 

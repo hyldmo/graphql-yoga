@@ -137,11 +137,11 @@ Fetch API's `Request.formData` method doesn't have any options to configure the 
 Instead we can configure our Fetch API ponyfill to manage that.
 
 ```ts
-import { create } from 'cross-undici-fetch'
+import { createFetch } from '@whatwg-node/fetch'
 import { createYoga } from 'graphql-yoga'
 
 createYoga({
-  fetchAPI: create({
+  fetchAPI: createFetch({
     // We prefer `node-fetch` over `undici` and current unstable Node's implementation
     useNodeFetch: true,
     formDataLimits: {

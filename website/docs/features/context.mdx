@@ -194,7 +194,7 @@ However, we recommend avoiding to use `context.req` and `context.res` wherever p
 You might notice that the middleware implementation is more complex for server frameworks like [Fastify](/docs/integrations/integration-with-fastify) and [koa](/docs/integrations/integration-with-koa), because of their custom request handling behavior.
 It is not possible to use a basic Node.js [RequestListener](https://nodejs.org/api/http.html#http_class_http_incomingmessage) function.
 
-Since they limit the access to the underlying raw `ServerResponse` object, the recipes use the `.handleIncomingMessage` method and pass the server context as the second parameter.
+Since they limit the access to the underlying raw `ServerResponse` object, the recipes use the `.handleNodeRequest` method and pass the server context as the second parameter.
 
 E.g. for **_Fastify_**, a [`Reply`](<(https://www.fastify.io/docs/latest/Reply/)>) object is attached to the server context instead of the `Request` object, which is an intermediate framework specific response format.
 Also note the generic definition in `createYoga` for correctly typing the server context.
@@ -207,7 +207,7 @@ const yoga = createYoga<{
 
 // some where within the request handler
 
-const response = await yoga.handleIncomingMessage(req, {
+const response = await yoga.handleNodeRequest(req, {
   req,
   reply,
 })

@@ -24,6 +24,10 @@ import { schema } from './schema';
 + })
 ```
 
+**`handleIncomingMessage` renamed to `handleNodeRequest`**
+
+For some frameworks, we need to use this low-level function such as Fastify and Koa. So you can basically rename the method to `handleNodeRequest`.
+
 **No more `.start` and `.stop`**
 
 Previously on Node and CF/Service Workers environments, Yoga handles server processes with `.start` and `.stop` methods together with some environment specific server configurations. Yoga no longer deals with HTTP server configuration so the following changes needed;
@@ -55,13 +59,14 @@ Previously on Node and CF/Service Workers environments, Yoga handles server proc
 
 **No more Node specific multipart configuration**
 
-Previously it was possible to configure limitations of multipart request processing in `@graphql-yoga/node` package but now `graphql-yoga` package is completely platform agnostic and we avoid to have any Node specific configuration in GraphQL Yoga. But it is still possible to keep the same behavior by configuring `cross-undici-fetch` which is used by GraphQL Yoga internally for Node.js.
+Previously it was possible to configure limitations of multipart request processing in `@graphql-yoga/node` package but now `graphql-yoga` package is completely platform agnostic and we avoid to have any Node specific configuration in GraphQL Yoga. But it is still possible to keep the same behavior by configuring `@whatwg-node/fetch` which is used by GraphQL Yoga internally for Node.js.
 
 ```diff
 - import { createServer } from '@graphql-yoga/node'
 + import { createYoga } from 'graphql-yoga'
-+ import { create } from 'cross-undici-fetch'
++ import { createFetch } from '@whatwg-node/fetch'
 
+- const yoga = createServer({
 + const yoga = createYoga({
 +  fetchAPI: create({
 +     // We prefer `node-fetch` over `undici` and current unstable Node's implementation

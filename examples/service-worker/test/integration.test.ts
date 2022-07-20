@@ -1,6 +1,6 @@
 import { getIntrospectionQuery } from 'graphql'
 import { createYoga } from 'graphql-yoga'
-import { Request } from 'cross-undici-fetch'
+import { Request } from '@whatwg-node/fetch'
 
 const listenerMap = new Map<string, Set<EventListenerOrEventListenerObject>>()
 

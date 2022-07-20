@@ -16,7 +16,7 @@ Let's setup a simple schema that calls a remote service that is unavailable.
 
 ```ts
 import { createYoga } from 'graphql-yoga'
-import { fetch } from 'cross-undici-fetch'
+import { fetch } from '@whatwg-node/fetch'
 
 // Provide your schema
 const yoga = createYoga({
@@ -100,7 +100,7 @@ node server.js
 
 ```ts
 import { createYoga } from 'graphql-yoga'
-import { fetch } from 'cross-undici-fetch'
+import { fetch } from '@whatwg-node/fetch'
 
 // Provide your schema
 const yoga = createYoga({

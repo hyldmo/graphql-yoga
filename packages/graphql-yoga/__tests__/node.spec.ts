@@ -21,12 +21,12 @@ import http, { createServer, IncomingMessage } from 'http'
 import { useLiveQuery } from '@envelop/live-query'
 import { InMemoryLiveQueryStore } from '@n1ru4l/in-memory-live-query-store'
 import {
-  create,
+  createFetch,
   AbortController,
   fetch,
   File,
   FormData,
-} from 'cross-undici-fetch'
+} from '@whatwg-node/fetch'
 import { ExecutionResult } from '@graphql-tools/utils'
 import { ServerResponse, Server } from 'http'
 
@@ -579,7 +579,7 @@ describe('Incremental Delivery', () => {
     schema,
     logging: false,
     maskedErrors: false,
-    fetchAPI: create({
+    fetchAPI: createFetch({
       useNodeFetch: true,
       formDataLimits: {
         fileSize: 12,
