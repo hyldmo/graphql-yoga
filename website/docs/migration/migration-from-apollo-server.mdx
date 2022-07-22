@@ -48,7 +48,6 @@ import { schema } from './schema'
 
 + const server = createServer(yoga)
 
-- const server = createServer(yoga)
 server.listen(4000)
 + server.listen(4000)
 ```
@@ -61,9 +60,9 @@ You don't need anything special. You can just use GraphQL Yoga as in the example
 
 Check the integration section to choose the server framework you are using with Apollo Server.
 
-For example, if you are using **Express**, you should remove `const server = createServer(yoga) server.listen(4000)` from the code above and replace `server.applyMiddleware({ app })` with the route as in [Express Integration section](/docs/integrations/integration-with-express)
+For example, if you are using **Express**, you should remove the standalone HTTP server part(`createServer(yoga)` & `server.listen(4000)`) from the code above and replace `server.applyMiddleware({ app })` with the route as in [Express Integration section](/docs/integrations/integration-with-express)
 
 ```diff
 - server.applyMiddleware({ app })
-+ app.use('/graphql', server)
++ app.use('/graphql', yoga)
 ```
