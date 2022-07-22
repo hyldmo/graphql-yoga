@@ -71,7 +71,7 @@ Previously it was possible to configure limitations of multipart request process
 
 - const yoga = createServer({
 + const yoga = createYoga({
-+  fetchAPI: create({
++  fetchAPI: createFetch({
 +     // We prefer `node-fetch` over `undici` and current unstable Node's implementation
 +     useNodeFetch: true,
 +     formDataLimits: {
