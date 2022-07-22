@@ -24,8 +24,7 @@ import { typeDefs, resolvers } from './schema'
 
 const server = new GraphQLServer({ typeDefs, resolvers })
 
-const server = createServer(yoga)
-server.listen(4000)
+server.start()
 ```
 
 **Yoga v3**
@@ -59,11 +58,10 @@ const server = new GraphQLServer({
   resolvers,
 })
 
-const server = createServer(yoga)
-server.listen(4000)
+server.start()
 ```
 
-In Yoga v2 you now need to use the `fs` module for Node.js.
+In Yoga v3 you now need to use the `fs` module for Node.js.
 
 **Yoga v3**
 
@@ -110,8 +108,7 @@ const server = new GraphQLServer({
   directiveResolvers: uppercaseDirectiveResolverImplementation,
 })
 
-const server = createServer(yoga)
-server.listen(4000)
+server.start()
 ```
 
 Before deciding upon using schema directives, you should consider whether your custom directive could be instead implemented via a field argument (abstraction).
@@ -262,8 +259,7 @@ const server = new GraphQLServer({
   middleware: [permissions],
 })
 
-const server = createServer(yoga)
-server.listen(4000)
+server.start()
 ```
 
 **Yoga v3**
@@ -400,8 +396,7 @@ const server = new GraphQLServer({
   },
 })
 
-const server = createServer(yoga)
-server.listen(4000)
+server.start()
 ```
 
 **Yoga v3**
@@ -499,8 +494,7 @@ const server = new GraphQLServer({
   },
 })
 
-const server = createServer(yoga)
-server.listen(4000)
+server.start()
 ```
 
 **Yoga v3**
